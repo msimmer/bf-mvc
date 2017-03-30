@@ -1,9 +1,7 @@
 
 import React from 'react'
 import { Switch, Route } from 'react-router-dom'
-import App from '../components/App'
-import About from '../components/About'
-import NotFound from '../components/Error'
+import { App, About, NotFound } from '../components'
 
 const Routes = () =>
   <div>

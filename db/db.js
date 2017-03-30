@@ -26,16 +26,24 @@ class Database {
   }
 
   onAquire(connection) {
-    return console.log('Acquires thread: %d', connection.threadId)
+    if (process.env.NODE_ENV !== 'test') {
+      return console.log('Acquires thread: %d', connection.threadId)
+    }
   }
   onConnection(connection) {
-    return console.log('Connects to thread: %d', connection.threadId)
+    if (process.env.NODE_ENV !== 'test') {
+      return console.log('Connects to thread: %d', connection.threadId)
+    }
   }
   onEnqueue() {
-    return console.log('Awaiting connection slot ...')
+    if (process.env.NODE_ENV !== 'test') {
+      return console.log('Awaiting connection slot ...')
+    }
   }
   onRelease(connection) {
-    return console.log('Connection released: %d', connection.threadId)
+    if (process.env.NODE_ENV !== 'test') {
+      return console.log('Connection released: %d', connection.threadId)
+    }
   }
 
   bindPoolEvents() {
@@ -56,7 +64,11 @@ class Database {
     Object.freeze(this._state) // freeze alias
     this.bindPoolEvents()
 
-    done(this.pool)
+    if (done && typeof done === 'function') {
+      return done(this.pool)
+    }
+
+    return this.pool
   }
 }
 

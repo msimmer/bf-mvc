@@ -2,19 +2,24 @@
 const User = require('./user')
 const db = require('../db')
 
-const user = new User()
+const rand = () => String(Math.round(Math.random() * 100000))
+const email = () => `${rand()}@${rand()}.com`
 
 describe('Application:User', () => {
   let userId
-  beforeAll(() => db.connect())
+  let user
+  beforeAll(() => db.connect(() => {
+    user = new User()
+    return user
+  }))
   afterAll(() => {
-    user.find({ name: 'foo' }).then(_ =>
-      user.remove({ id: _.id })
+    user.findWhere({ name: 'foo' }).then(_ =>
+      _.forEach(({ id }) => user.remove({ id }))
     )
   })
 
   it('Should add a user', () =>
-    user.add({ name: 'foo' }).then((_) => {
+    user.add({ name: 'foo', email: email() }).then((_) => {
       expect(_.insertId).toBeGreaterThan(0)
       userId = _.insertId
       return userId
@@ -28,7 +33,7 @@ describe('Application:User', () => {
   )
 
   it('Should get some users', () =>
-    user.add({ name: 'foo' }).then(() =>
+    user.add({ name: 'foo', email: email() }).then(() =>
       user.findWhere({ name: 'foo' }).then(_ =>
         expect(_.length).toBeGreaterThan(1)
       )
@@ -36,7 +41,7 @@ describe('Application:User', () => {
   )
 
   it('Should get all users', () =>
-    user.add({ name: 'foo' }).then(() =>
+    user.add({ name: 'foo', email: email() }).then(() =>
       user.findAll().then(_ =>
         expect(_.length).toBeGreaterThan(1)
       )
@@ -44,7 +49,7 @@ describe('Application:User', () => {
   )
 
   it('Should update a user', () =>
-    user.update({ id: userId, name: 'bar' }).then(_ =>
+    user.update({ id: userId, name: 'bar' }).then(() =>
       user.find({ id: userId }).then(_ =>
         expect(_).toHaveProperty('name', 'bar')
       )
@@ -52,7 +57,7 @@ describe('Application:User', () => {
   )
 
   it('Should remove a user', () =>
-    user.remove({ id: userId }).then(_ =>
+    user.remove({ id: userId }).then(() =>
       user.find({ id: userId }).then(_ =>
         expect(_).toBe(null)
       )

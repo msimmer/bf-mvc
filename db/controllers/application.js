@@ -1,11 +1,11 @@
 
-const _ = require('lodash')
+const { isPlainObject } = require('lodash')
 const pluralize = require('pluralize')
 const connection = require('../db')
 
 class ApplicationController {
   get name() {
-    return this.constructor.name.toLowerCase()
+    return this.model.constructor.name.toLowerCase()
   }
 
   constructor(options = {}) {
@@ -29,7 +29,7 @@ class ApplicationController {
 
   // this necessary? validation now happens in model ...
   validateData(data) {
-    if (!_.isPlainObject(data)) {
+    if (!isPlainObject(data)) {
       throw new TypeError(`Parameter [data] must be Object, provided ${typeof data}`)
     }
     return true
@@ -50,7 +50,7 @@ class ApplicationController {
   // user.add({ name: 'foo' }).then(_ => console.log(_))
   add(data) {
     this.validateData(data)
-    const model = pluralize(this.model.constructor.name).toLowerCase()
+    const model = pluralize(this.name).toLowerCase()
     return new Promise((resolve, reject) => {
       this.query(`INSERT INTO ${model} SET ?`, data, (err, results, fields) => {
         if (err) { return resolve(err) }
@@ -64,7 +64,7 @@ class ApplicationController {
   // user.find({ name: 'foo' }).then(_ => console.log(_))
   find(data) {
     this.validateData(data)
-    const model = pluralize(this.model.constructor.name).toLowerCase()
+    const model = pluralize(this.name).toLowerCase()
     return new Promise((resolve, reject) =>
       this.query(`SELECT * FROM ${model} WHERE ? LIMIT 1`, data, (results, fields) => {
         const resp = results && results[0] ? results[0] : null
@@ -77,7 +77,7 @@ class ApplicationController {
   // user.findWhere({ name: 'foo' }).then(_ => console.log(_))
   findWhere(data) {
     this.validateData(data)
-    const model = pluralize(this.model.constructor.name).toLowerCase()
+    const model = pluralize(this.name).toLowerCase()
     return new Promise((resolve, reject) =>
       this.query(`SELECT * FROM ${model} WHERE ?`, data, (results, fields) => {
         return resolve(results)
@@ -89,7 +89,7 @@ class ApplicationController {
   // user.findAll({ name: 'foo' }).then(_ => console.log(_))
   findAll(data) {
     // this.validateData(data)
-    const model = pluralize(this.model.constructor.name).toLowerCase()
+    const model = pluralize(this.name).toLowerCase()
     return new Promise((resolve, reject) =>
       this.query(`SELECT * FROM ${model}`, data, (results, fields) => {
         return resolve(results)
@@ -104,8 +104,10 @@ class ApplicationController {
     this.validateData(data)
     this.validateId(data.id)
 
+    const { id } = data
     delete data.id // don't update id
-    const model = pluralize(this.model.constructor.name).toLowerCase()
+
+    const model = pluralize(this.name).toLowerCase()
     return new Promise((resolve, reject) =>
       this.query(`UPDATE ${model} SET ? WHERE id = ${id}`, data, (results, fields) => {
         return resolve(results)
@@ -118,18 +120,13 @@ class ApplicationController {
   remove(data) {
     const { id } = data
     this.validateId(id)
-    const model = pluralize(this.model.constructor.name).toLowerCase() // table name
+    const model = pluralize(this.name).toLowerCase() // table name
     return new Promise((resolve, reject) =>
       this.query(`DELETE FROM ${model} WHERE id = ${id}`, null, (results, fields) => {
         return resolve(results)
       })
     )
   }
-
-  permit(params) {
-    console.log(this)
-  }
-  require(params) {}
 }
 
 module.exports = ApplicationController

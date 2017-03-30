@@ -51,12 +51,6 @@ class StrongParams {
 
   static requireParams(_reqs, params) {
     const reqs = Array.prototype.slice.call(_reqs, 0)
-    const keys = params.map((_) => {
-      for (const [key] of entries(_)) {
-        return key
-      }
-    })
-
     const err = difference(reqs, params)
     if (err.length !== 0) {
       this.paramsErrors.add('require', { message: `Unmet requirements: [${[err]}]` })
@@ -67,12 +61,6 @@ class StrongParams {
 
   static permitParams(_reqs, params) {
     const reqs = Array.prototype.slice.call(_reqs, 0)
-    const keys = params.map((_) => {
-      for (const [key] of entries(_)) {
-        return key
-      }
-    })
-
     const err = difference(params, reqs)
     if (err.length !==  0) {
       this.paramsErrors.add('permit', { message: `Illegal arguments: [${[err]}]` })

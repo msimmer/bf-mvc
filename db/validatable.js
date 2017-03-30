@@ -1,3 +1,5 @@
+/* eslint-disable valid-jsdoc */
+
 /*
 
   This is a slightly modified version of _CaminteJS_'s Validateable class
@@ -211,7 +213,7 @@ class Validatable {
         let asyncFail = false
         const done = (fail) => {
           asyncFail = asyncFail || fail
-          if (--wait === 0 && callback) {
+          if (--wait === 0 && callback) { // eslint-disable-line no-plusplus
             validationsDone.call(this, () => {
               if (valid && !asyncFail) cleanErrors(this)
               callback(valid && !asyncFail)
@@ -354,7 +356,7 @@ class Validatable {
     this.constructor.all(cond, (error, found) => {
       if (found.length > 1) {
         err()
-      } else if (found.length === 1 && (!this.id || !found[0].id || found[0].id.toString() !== this.id.toString())) {
+      } else if (found.length === 1 && (!this.id || !found[0].id || found[0].id.toString() !== this.id.toString())) { // eslint-disable-line max-len
         err()
       }
       done()

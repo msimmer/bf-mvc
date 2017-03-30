@@ -23,13 +23,15 @@
   "devDependencies": {
     "babel-eslint": "^7.2.1",
     "eslint": "^3.18.0",
+    "nodemon": "^1.11.0",
     "react-scripts": "0.9.5"
   },
   "scripts": {
     "start": "react-scripts start",
-    "serve": "nodemon bin/www",
+    "serve": "./node_modules/.bin/nodemon -L bin/www",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom --verbose",
+    "lint": "./node_modules/.bin/eslint src db bin routes",
     "eject": "react-scripts eject"
   }
 }
